@@ -1,11 +1,11 @@
 
-OUTD="/data/VEP_Filter.out"
+OUTD="output"
 mkdir -p $OUTD
 
-VCF="/data/GATK.indel.Final.vcf.gz"
-CONFIG="../../params/VEP_Filter.config.ini"
+VCF="/data/testing/demo_data-local/C3L-00908.output_vep.vcf"
+CONFIG="/data/params/af_filter.config.ini"
 
-OUT="$OUTD/GATK.indel.VLD.SAMPLE.vcf"
+OUT="$OUTD/C3L-00908.af.vcf"
 
-bash ../../src/run_vaf_length_depth_filters.sh $@ $ARG -o $OUT $VCF $CONFIG
+bash ../../src/run_af_filter.sh $@ $ARG -o $OUT $VCF $CONFIG
 

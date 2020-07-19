@@ -12,9 +12,20 @@ Filtering based on pyVCF filters as described [here](https://pyvcf.readthedocs.i
 
 All 3 filters rely on VCF annotation provided by VEP annotation
 
+## Installation
+
+`VEP_Filter` is typically installed as a submodule within TinDaisy.  However, an
+independent copy can be cloned from GitHub with,
+```
+git clone --recurse-submodules https://github.com/ding-lab/VEP_Filter.git
+```
+
 ## Input
 
 Describe configuration files
+
+## Testing
+
 
 
 ## Contact
