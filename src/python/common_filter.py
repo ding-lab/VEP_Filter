@@ -76,15 +76,18 @@ class VEPFilter(ConfigFileFilter):
         # since pyvcf's vcf_filter.py does not expose vcf.Reader, we need to do the parsing here ourselves.
         # For this reason the vcf filename needs to be passed directly here as --input_vcf.
         vcf_reader = vcf.Reader(open(vcf_fn, 'r'))
+
         if 'CSQ' not in vcf_reader.infos:
             eprint("CSQ not in infos")
             raise Exception( "CSQ INFO field missing for %s\nThis field is typically generated during VEP annotation" % vcf_fn)
 
         # Test to see if any records exist.  This isn't really used for anything but may be informative for user
-        try:
-            r = vcf_reader.next()
-        except StopIteration:
-            eprint("Note: %s has no VCF records" % vcf_fn)
+        # Update: with python 3.8 this has error,
+#           AttributeError: 'Reader' object has no attribute 'next'
+#        try:
+#            r = vcf_reader.next()
+#        except StopIteration:
+#            eprint("Note: %s has no VCF records" % vcf_fn)
 
         CSQ_desc = vcf_reader.infos['CSQ'].desc
 
