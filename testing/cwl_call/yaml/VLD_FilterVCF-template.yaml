@@ -1,0 +1,16 @@
+config:  # type "File"
+    class: File
+    path: a/file/path
+VCF:  # type "File"
+    class: File
+    path: a/file/path
+bypass_allele_depth: false  # type "boolean" (optional)
+debug_allele_depth: false  # type "boolean" (optional)
+bypass_depth: false  # type "boolean" (optional)
+debug_depth: false  # type "boolean" (optional)
+bypass_length: false  # type "boolean" (optional)
+debug_length: false  # type "boolean" (optional)
+bypass_VAF: false  # type "boolean" (optional)
+debug_VAF: false  # type "boolean" (optional)
+no_pipe: false  # type "boolean" (optional)
+dryrun: false  # type "boolean" (optional)

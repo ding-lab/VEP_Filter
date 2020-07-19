@@ -1,0 +1,17 @@
+config:  # type "File"
+    class: File
+    path: ../../../params/VLD_FilterVCF-pindel.config.ini
+VCF:  # type "File"
+    class: File
+    path: /home/mwyczalk_test/Projects/GermlineCaller/C3L-00001/pindel_sifted.out.CvgVafStrand_pass.Homopolymer_pass.vcf
+
+bypass_allele_depth: false  # type "boolean" (optional)
+debug_allele_depth: false  # type "boolean" (optional)
+bypass_depth: false  # type "boolean" (optional)
+debug_depth: false  # type "boolean" (optional)
+bypass_length: false  # type "boolean" (optional)
+debug_length: false  # type "boolean" (optional)
+bypass_VAF: false  # type "boolean" (optional)
+debug_VAF: false  # type "boolean" (optional)
+no_pipe: false  # type "boolean" (optional)
+dryrun: false  # type "boolean" (optional)
