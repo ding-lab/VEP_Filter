@@ -30,8 +30,9 @@ EOF
 source /opt/VEP_Filter/src/utils.sh
 SCRIPT=$(basename $0)
 
-PYTHON=""
-export PYTHONPATH="/opt/VEP_Filter/src/PYTHON:$PYTHONPATH"
+PYTHON_BIN="/usr/local/bin/python"
+
+export PYTHONPATH="/opt/VEP_Filter/src/python:$PYTHONPATH"
 OUT_VCF="-"
 TMPD="./output"
 
@@ -100,11 +101,17 @@ fi
 # Common configuration file is used for all filters
 CONFIG="--config $CONFIG_FN"
 
-FILTER_CMD="vcf_filter.py $CMD_ARGS --local-script $FILTER_SCRIPT"  # filter module
 
 OUT="$TMPD/vaf_filter_out.vcf"
-CMD1="cat $VCF | $FILTER_CMD - $FILTER_NAME $FILTER_ARGS $CONFIG > $OUT"
-run_cmd "$CMD1" $DRYRUN
+#CMD="cat $VCF | $FILTER_CMD - $FILTER_NAME $FILTER_ARGS $CONFIG > $OUT"
+#CMD="$FILTER_CMD $FILTER_NAME $FILTER_ARGS $CONFIG > $OUT"
+
+#/usr/local/bin/vcf_filter.py
+FILTER_CMD="cat $VCF |  /usr/local/bin/vcf_filter.py $CMD_ARGS --local-script $FILTER_SCRIPT - af" # --input_vcf $VCF"  # filter module
+# CMD="$FILTER_CMD  $FILTER_ARGS $CONFIG --input-file $VCF" - why is this required?
+CMD="$FILTER_CMD  $FILTER_ARGS $CONFIG --input_vcf $VCF"
+
+run_cmd "$CMD" $DRYRUN
 
 if [ $OUT_VCF != "-" ]; then
     >&2 echo Written to $OUT_VCF
