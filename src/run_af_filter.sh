@@ -1,6 +1,6 @@
 #/bin/bash
 
-read -r -d '' USAGE <<'EOF'
+read -r -d '' USAGE_AF <<'EOF'
 Run allele frequency filters on a VCF 
 
 Usage:
@@ -19,6 +19,13 @@ VCF is input VCF file
 CONFIG_FN is configuration file with `af` section
 ...
 EOF
+
+# Arguments of AF filter.  
+FILTER_SCRIPT="af_filter.py"  # filter module
+FILTER_NAME="af"
+USAGE="$USAGE_AF"
+
+### aim is to have all AF-specific details above
 
 # No provision is made for executing multiple consequtive filters using UNIX pipes
 # (e.g., cmd1 | cmd2).  See https://github.com/ding-lab/VLD_FilterVCF for example of pipes
@@ -85,9 +92,6 @@ VCF=$1 ; confirm $VCF
 CONFIG_FN=$2 ; confirm $CONFIG_FN
 
 
-# Arguments of AF filter.  
-FILTER_SCRIPT="af_filter.py"  # filter module
-FILTER_NAME="af"
 
 # Create output paths if necessary
 if [ $OUT_VCF != "-" ]; then
