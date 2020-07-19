@@ -102,14 +102,13 @@ fi
 CONFIG="--config $CONFIG_FN"
 
 
-OUT="$TMPD/vaf_filter_out.vcf"
-#CMD="cat $VCF | $FILTER_CMD - $FILTER_NAME $FILTER_ARGS $CONFIG > $OUT"
-#CMD="$FILTER_CMD $FILTER_NAME $FILTER_ARGS $CONFIG > $OUT"
-
-#/usr/local/bin/vcf_filter.py
-FILTER_CMD="cat $VCF |  /usr/local/bin/vcf_filter.py $CMD_ARGS --local-script $FILTER_SCRIPT - af" # --input_vcf $VCF"  # filter module
-# CMD="$FILTER_CMD  $FILTER_ARGS $CONFIG --input-file $VCF" - why is this required?
+# `cat VCF | vcf_filter.py` avoids weird errors
+FILTER_CMD="cat $VCF |  /usr/local/bin/vcf_filter.py $CMD_ARGS --local-script $FILTER_SCRIPT - $FILTER_NAME" # filter module
 CMD="$FILTER_CMD  $FILTER_ARGS $CONFIG --input_vcf $VCF"
+    
+if [ $OUT_VCF != "-" ]; then
+    CMD="$CMD > $OUT_VCF"
+fi
 
 run_cmd "$CMD" $DRYRUN
 
