@@ -55,9 +55,9 @@ class ClassificationFilter(VEPFilter):
         else:
             self.__doc__ = "Exclude calls found in dbSnP based on VEP" 
             if self.rescue_cosmic:
-                self.__doc__ = self.__doc__ + ".  Variants in COSMIC retained"
+                self.__doc__ = self.__doc__ + ".  Rescue COSMIC variants"
             if self.rescue_clinvar:
-                self.__doc__ = self.__doc__ + ".  Variants in ClinVar retained"
+                self.__doc__ = self.__doc__ + ".  Rescue ClinVar variants"
 
     def filter_name(self):
         return self.name
