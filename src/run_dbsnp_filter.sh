@@ -4,13 +4,12 @@ read -r -d '' USAGE_CLASS <<'EOF'
 Run allele frequency filters on a VCF 
 
 Usage:
-  bash run_dbsnp_filter.sh [options] VCF CONFIG_FN
+  bash run_dbsnp_filter.sh [options] VCF
 
 Options:
 -h: Print this help message
 -d: Dry run - output commands but do not execute them
 -o OUT_VCF: Output VCF.  Default writes to STDOUT
--O TMPD: Directory for intermediate output, used when -N specified. Default: ./output
 -e: filter debug mode
 -E: filter bypass
 -R: remove filtered variants.  Default is to retain filtered variants with filter name in VCF FILTER field
@@ -40,10 +39,9 @@ PYTHON_BIN="/usr/local/bin/python"
 
 export PYTHONPATH="/opt/VEP_Filter/src/python:$PYTHONPATH"
 OUT_VCF="-"
-TMPD="./output"
 
 # http://wiki.bash-hackers.org/howto/getopts_tutorial
-while getopts ":hdO:o:eER" opt; do
+while getopts ":hdo:eER" opt; do
   case $opt in
     h)
       echo "$USAGE"
@@ -51,9 +49,6 @@ while getopts ":hdO:o:eER" opt; do
       ;;
     d)  # binary argument
       DRYRUN=1
-      ;;
-    O)
-      TMPD="$OPTARG"
       ;;
     o)
       OUT_VCF="$OPTARG"
@@ -81,33 +76,23 @@ while getopts ":hdO:o:eER" opt; do
 done
 shift $((OPTIND-1))
 
-if [ "$#" -ne 2 ]; then
+if [ "$#" -ne 1 ]; then
     >&2 echo Error: Wrong number of arguments
     >&2 echo "$USAGE"
     exit 1
 fi
 
 VCF=$1 ; confirm $VCF
-CONFIG_FN=$2 ; confirm $CONFIG_FN
-
-
 
 # Create output paths if necessary
 if [ $OUT_VCF != "-" ]; then
     OUTD=$(dirname $OUT_VCF)
     run_cmd "mkdir -p $OUTD" $DRYRUN
 fi
-if [ "$NO_PIPE" ]; then
-    run_cmd "mkdir -p $TMPD" $DRYRUN
-fi    
-
-# Common configuration file is used for all filters
-CONFIG="--config $CONFIG_FN"
-
 
 # `cat VCF | vcf_filter.py` avoids weird errors
 FILTER_CMD="cat $VCF |  /usr/local/bin/vcf_filter.py $CMD_ARGS --local-script $FILTER_SCRIPT - $FILTER_NAME" # filter module
-CMD="$FILTER_CMD  $FILTER_ARGS $CONFIG --input_vcf $VCF"
+CMD="$FILTER_CMD $FILTER_ARGS --input_vcf $VCF"
     
 if [ $OUT_VCF != "-" ]; then
     CMD="$CMD > $OUT_VCF"

@@ -73,15 +73,29 @@ class ClassificationFilter(VEPFilter):
         # CSQ has all VCF CSQ INFO entries as dictionary
         CSQ = self.parse_CSQ(record)
 
-        eprint(CSQ["Existing_variation"])
-        sys.exit()
-
-
-
-        if CSQ[self.filter_field]:
-            CSQ_values = CSQ[self.filter_field].split("&")
+        if CSQ["Existing_variation"]:
+            CSQ_values = CSQ["Existing_variation"].split("&")
         else:
             CSQ_values = None
+
+        vcf_id = "" # this will be the ID field.  Should have values of all IDs used to determine eligibility
+        is_dbsnp = False
+        for v in CSQ:
+            if v.startswith("rs"):
+                is_dbsnp = True
+                vcf_id = v
+
+        is_cosmic = False
+        for v in CSQ:
+            if v.startswith("COSV"):        # I don't know this.  See /gscuser/mwyczalk/projects/TinDaisy/testing/dbSnP-filter-dev/dbSnP-filter-dev/README.md
+                is_cosmic = True
+                vcf_id = vcf_id + ";" + v   # semicolon separated per https://samtools.github.io/hts-specs/VCFv4.2.pdf
+
+        is_clinvar = False
+        if self.rescue_clinvar:
+            if CSQ["ClinVar"]:              # this is not clear either
+                is_clinvar = True
+                vcf_id = vcf_id + ";" + v   
 
         if self.dump:
             eprint("CSQ: " + str(CSQ) )
@@ -91,18 +105,28 @@ class ClassificationFilter(VEPFilter):
             if (self.debug): eprint("** Bypassing %s filter, retaining read **" % self.name )
             return
 
+        # TODO: figure out how to have record.INFO written 
+        if self.add_id:
+            record.ID = vcf_id
 
-        if self.including: # keep call if observed value(s) in list
-            if len(intersection) == 0:
-                if (self.debug): eprint("** FAIL: %s not in %s **" % report )
-                return " %s not in %s **" % report
-            else:
-                if (self.debug): eprint("** PASS: %s is in %s **" % report )
-                return
-        else:                 
-            if len(intersection) > 0: # discard call if observed value(w) in list
-                if (self.debug): eprint("** FAIL: %s is in %s **" % report )
-                return " %s in %s **" % report
-            else:
-                if (self.debug): eprint("** PASS: %s not in %s **" % report )
-                return
+        reject = False
+        status=""
+        if is_dbsnp:
+            reject = True
+            status = "rejected - dbsnp"
+            if self.rescue_cosmic:
+                if is_cosmic;
+                    reject = False
+                    status = status + " rescued - cosmic"
+            if self.rescue_clinvar:
+                if is_clinvar;
+                    reject = False
+                    status = status + " rescued - clinvar"
+
+        if reject:
+            if (self.debug): eprint("** FAIL: %s **" % status )
+            return status
+        else
+            if (self.debug): eprint("** PASS: %s **" % status )
+            return
+
