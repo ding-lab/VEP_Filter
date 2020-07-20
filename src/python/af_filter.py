@@ -52,7 +52,7 @@ class AFFilter(VEPFilter):
         parser.add_argument('--af_field', type=int, help='VCF variable (INFO CSQ entry) associated with AF to evaluate')
 
     def __init__(self, args):
-        self.CSQ_headers = self.get_CSQ_header(args.input_vcf)
+        self.CSQ_headers = VEPFilter.get_CSQ_header(args.input_vcf)
 
         # These will not be set from config file (though could be)
         self.debug = args.debug
@@ -91,7 +91,7 @@ class AFFilter(VEPFilter):
             return
 
         # CSQ has all VCF CSQ INFO entries as dictionary
-        CSQ = self.parse_CSQ(record)
+        CSQ = VEPFilter.parse_CSQ(record, self.CSQ_headers)
         if self.dump:
             eprint("CSQ: " + str(CSQ) )
 
