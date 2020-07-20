@@ -13,74 +13,57 @@ import sys
 # Note that the input_vcf file will in general be specified twice, once as input into vcf_filter.py
 # and once as input into this filter directly.
 
-CSQ field  - Existing_variation
-           - ClinVar - 
-           
-Adding ClinVar annotation details: https://m.ensembl.org/info/docs/tools/vep/script/vep_custom.html
+# Require that the following CSQ fields be present:
+# - Existing_variation
+# - ClinVar - this is required only for clinvar rescue
+#         Adding ClinVar annotation details: https://m.ensembl.org/info/docs/tools/vep/script/vep_custom.html
+
+# Details about fields in CSQ
+# /Users/mwyczalk/Projects/TinDaisy/testing/dbSnP-filter-dev/VEP_annotate.testing/BAP1.variant-details.numbers
+
 
 class ClassificationFilter(VEPFilter):
     'Filter variant sites based on field as provided by VEP annotation'
 
-    name = 'classification'
+    name = 'dbsnp'
 
     @classmethod
     def customize_parser(self, parser):
         parser.add_argument('--debug', action="store_true", default=False, help='Print debugging information to stderr')
-        parser.add_argument('--config', type=str, help='Optional configuration file')
         parser.add_argument('--input_vcf', type=str, help='Input VCF filename', required=True)
         parser.add_argument('--rescue_cosmic', action="store_true", default=False, help='Retain variants in COSMIC')
         parser.add_argument('--rescue_clinvar', action="store_true", default=False, help='Retain variants in ClinVar')
         parser.add_argument('--bypass', action="store_true", default=False, help='Bypass filter by retaining all variants')
         parser.add_argument('--dump', action="store_true", default=False, help='Dump out CSQ dictionary for each read')
-
-
+        parser.add_argument('--add_id', action="store_true", default=False, help='Add dbSnP, COSMIC, ClinVar IDs to VCF ID field')
 
     def __init__(self, args):
         self.CSQ_headers = self.get_CSQ_header(args.input_vcf)
 
-        # These will not be set from config file (though could be)
         self.debug = args.debug
         self.bypass = args.bypass
         self.dump = args.dump
-
-        # Read arguments from config file first, if present.
-        # Then read from command line args, if defined
-        # Note that default values in command line args would
-        #   clobber configuration file values so are not defined
-        config = self.read_config_file(args.config)
-
-        # read arguments from config file and/or command line
-        self.set_args(config, args, "filter_field")
-        self.set_args(config, args, "include", required=False)
-        self.set_args(config, args, "exclude", required=False)
-
-        if self.debug:
-            eprint("include: " + str(self.include))
-            eprint("exclude: " + str(self.exclude))
-
-        # process include / exclude args
-        # User defines either include caller or exclude caller, but not both
-        if bool(self.include) == bool(self.exclude):
-            raise Exception("Must define exactly one of the following: --include, --exclude")
-
-        if self.include is not None:
-            self.including = True
-            self.classifications = list(map(str.strip, self.include.split(','))) # stripping leading, trailing whitespace from each entry
-        else:
-            self.including = False
-            self.classifications = list(map(str.strip, self.exclude.split(',')))
+        self.rescue_cosmic = args.rescue_cosmic
+        self.rescue_clinvar = args.rescue_clinvar
+        self.add_id = args.add_id
 
         # Make sure field we're filtering on is in CSQ header info
-        if self.filter_field not in self.CSQ_headers:
-            raise Exception( "CSQ field %s not found in %s" % (self.filter_field, args.input_vcf) )
+        # if looking to rescue based on ClinVar, need to have ClinVar info
+        if "Existing_variation" not in self.CSQ_headers: 
+            raise Exception( "CSQ field %s not found in %s." % ("Existing_variation", args.input_vcf) )
+        if args.rescue_clinvar:
+            if "ClinVar" not in self.CSQ_headers: 
+                raise Exception( "CSQ field %s not found in %s." % ("ClinVar", args.input_vcf) )
 
         # below becomes Description field in VCF
         if self.bypass:
-            self.__doc__ = "Bypassing Classification filter, retaining all reads"
-        elif self.including:
-            self.__doc__ = "Retain calls where INFO CSQ field '%s' (in most significant transcript) includes one of %s" % (self.filter_field, str(self.classifications))
+            self.__doc__ = "Bypassing dbSnP filter, retaining all reads"
         else:
-            self.__doc__ = "Exclude calls where INFO CSQ field '%s' (in most significant transcript) includes any of %s" % (self.filter_field, str(self.classifications))
+            self.__doc__ = "Exclude calls found in dbSnP based on VEP" 
+            if self.rescue_cosmic:
+                self.__doc__ = self.__doc__ + ".  Variants in COSMIC retained"
+            if self.rescue_clinvar:
+                self.__doc__ = self.__doc__ + ".  Variants in ClinVar retained"
 
     def filter_name(self):
         return self.name
@@ -89,6 +72,10 @@ class ClassificationFilter(VEPFilter):
 
         # CSQ has all VCF CSQ INFO entries as dictionary
         CSQ = self.parse_CSQ(record)
+
+        eprint(CSQ["Existing_variation"])
+        sys.exit()
+
 
 
         if CSQ[self.filter_field]:
@@ -104,11 +91,6 @@ class ClassificationFilter(VEPFilter):
             if (self.debug): eprint("** Bypassing %s filter, retaining read **" % self.name )
             return
 
-        # Evaluate intersection of the two lists, CSQ_values and include/exclude list ("classifications")
-        # Then if we had an exclude list we drop the call, and if we have an include list we keep it.
-        # https://www.geeksforgeeks.org/python-intersection-two-lists/
-        intersection = list(set(CSQ_values) & set(self.classifications))
-        report = (str(CSQ_values), str(self.classifications))
 
         if self.including: # keep call if observed value(s) in list
             if len(intersection) == 0:
