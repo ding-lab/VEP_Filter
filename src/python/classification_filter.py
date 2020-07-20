@@ -79,10 +79,10 @@ class ClassificationFilter(VEPFilter):
 
         if self.include is not None:
             self.including = True
-            self.classifications = map(str.strip, self.include.split(',')) # stripping leading, trailing whitespace from each entry
+            self.classifications = list(map(str.strip, self.include.split(','))) # stripping leading, trailing whitespace from each entry
         else:
             self.including = False
-            self.classifications = map(str.strip, self.exclude.split(','))
+            self.classifications = list(map(str.strip, self.exclude.split(',')))
 
         # Make sure field we're filtering on is in CSQ header info
         if self.filter_field not in self.CSQ_headers:
