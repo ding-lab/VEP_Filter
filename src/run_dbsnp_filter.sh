@@ -13,9 +13,14 @@ Options:
 -e: filter debug mode
 -E: filter bypass
 -R: remove filtered variants.  Default is to retain filtered variants with filter name in VCF FILTER field
+-I ID_POLICY: Add variant ID to VCF ID field.  Permitted values:
+    'dbsnp' add dbsnp ID only
+    'all' add IDs, including ClinVar if available
+    'none' - do not modify ID field
+-c: rescue variants which appear in COSMIC
+-l: rescue variants which appear in ClinVar
 
 VCF is input VCF file
-CONFIG_FN is configuration file with `af` section
 ...
 EOF
 
@@ -39,9 +44,10 @@ PYTHON_BIN="/usr/local/bin/python"
 
 export PYTHONPATH="/opt/VEP_Filter/src/python:$PYTHONPATH"
 OUT_VCF="-"
+ID_POLICY="none"
 
 # http://wiki.bash-hackers.org/howto/getopts_tutorial
-while getopts ":hdo:eER" opt; do
+while getopts ":hdo:eERI:cl" opt; do
   case $opt in
     h)
       echo "$USAGE"
@@ -55,12 +61,22 @@ while getopts ":hdo:eER" opt; do
       ;;
     e)
       FILTER_ARGS="$FILTER_ARGS --debug"
+      ID_ARGS="$ID_ARGS --debug"
       ;;
     E)
       FILTER_ARGS="$FILTER_ARGS --bypass"
       ;;
     R)
       CMD_ARGS="--no-filtered"
+      ;;
+    I)
+      ID_POLICY="$OPTARG"
+      ;;
+    c)
+      FILTER_ARGS="$FILTER_ARGS -c"
+      ;;
+    l)
+      FILTER_ARGS="$FILTER_ARGS -l"
       ;;
     \?)
       >&2 echo "Invalid option: -$OPTARG"
@@ -90,7 +106,27 @@ if [ $OUT_VCF != "-" ]; then
     run_cmd "mkdir -p $OUTD" $DRYRUN
 fi
 
-# `cat VCF | vcf_filter.py` avoids weird errors
+if [[ $ID_POLICY == "dbsnp" || $ID_POLICY == "all" ]]; then
+# for simplicity for now, require that OUT_VCF is a file if modifying ID field
+# This can be relaxed in the future by making a temp dir or using pipes
+    if [ -z $OUTD ]; then
+        >&2 echo "ERROR: currently require OUT_VCF be specified when modifying ID field"
+        exit 1 
+    fi
+    TMP_VCF="$OUTD/add_id.tmp.vcf"
+    CMD="$PYTHON_BIN /opt/VEP_Filter/src/python/vcf_add_VEP_ID.py $ID_ARGS -i $VCF -o $TMP_VCF -I $ID_POLICY"
+    run_cmd "$CMD" $DRYRUN
+
+    VCF="$TMP_VCF"
+elif [ $ID_POLICY == "none" ]; then
+    :
+else
+    >&2 echo "ERROR: unknown ID_POLICY $ID_POLICY"
+    exit 1
+fi
+    
+# "cat VCF | vcf_filter.py" avoids weird errors
+
 FILTER_CMD="cat $VCF |  /usr/local/bin/vcf_filter.py $CMD_ARGS --local-script $FILTER_SCRIPT - $FILTER_NAME" # filter module
 CMD="$FILTER_CMD $FILTER_ARGS --input_vcf $VCF"
     

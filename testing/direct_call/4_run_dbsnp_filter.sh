@@ -7,5 +7,6 @@ VCF="/data/testing/demo_data-local/C3L-00908.test-short.vcf"
 
 OUT="$OUTD/C3L-00908.dbSnP.vcf"
 
-bash ../../src/run_dbsnp_filter.sh $@ $ARG -o $OUT $VCF 
+# will add ID and use cosmic, clinvar rescue
+bash ../../src/run_dbsnp_filter.sh $@ -cl -I all $ARG -o $OUT $VCF 
 
