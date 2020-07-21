@@ -114,7 +114,13 @@ class VEPFilter(ConfigFileFilter):
                 return CSQ
         return None # this is probably an error condition
 
-    # try to guess type of existing variation ev
+    # try to guess type of existing variation
+    # We use the following heuristic to identify whether variant belongs in various databases:
+    # * if existing variation CSQ field begins with "rs", is_dbsnp = true 
+    # * if existing variation CSQ field begins with "COSV", is_cosmic = true
+    #   * based on examining COSMIC web site for several different examples
+    # * if ClinVar CSQ field has non-zero value, is_clinvar = true
+    #   * this value corresponds to Variation ID
     # Return tuple (is_dbsnp, is_cosmic, is_clinvar)
     @classmethod
     def get_id_type(cls, CSQ):
@@ -136,6 +142,7 @@ class VEPFilter(ConfigFileFilter):
     # if id_policy is 'dbsnp', ID is just dbsnp ID
     # if it is 'all', use all variants
     #  * all IDs in Existing_variation and ClinVar
+    #  * note that this may include variants other than dbSnP, COSMIC, or ClinVar
     # return semicolon separated list of relevant IDs per https://samtools.github.io/hts-specs/VCFv4.2.pdf
     @classmethod
     def get_id_name(cls, CSQ, id_policy):
