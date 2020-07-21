@@ -10,13 +10,12 @@ Options:
 -h: Print this help message
 -d: Dry run - output commands but do not execute them
 -o OUT_VCF: Output VCF.  Default writes to STDOUT
--O TMPD: Directory for intermediate output, used when -N specified. Default: ./output
 -e: filter debug mode
 -E: filter bypass
 -R: remove filtered variants.  Default is to retain filtered variants with filter name in VCF FILTER field
 
 VCF is input VCF file
-CONFIG_FN is configuration file with `af` section
+CONFIG_FN is configuration file with `classification` section
 ...
 EOF
 
@@ -40,10 +39,9 @@ PYTHON_BIN="/usr/local/bin/python"
 
 export PYTHONPATH="/opt/VEP_Filter/src/python:$PYTHONPATH"
 OUT_VCF="-"
-TMPD="./output"
 
 # http://wiki.bash-hackers.org/howto/getopts_tutorial
-while getopts ":hdO:o:eER" opt; do
+while getopts ":hdo:eER" opt; do
   case $opt in
     h)
       echo "$USAGE"
@@ -51,9 +49,6 @@ while getopts ":hdO:o:eER" opt; do
       ;;
     d)  # binary argument
       DRYRUN=1
-      ;;
-    O)
-      TMPD="$OPTARG"
       ;;
     o)
       OUT_VCF="$OPTARG"
@@ -97,13 +92,9 @@ if [ $OUT_VCF != "-" ]; then
     OUTD=$(dirname $OUT_VCF)
     run_cmd "mkdir -p $OUTD" $DRYRUN
 fi
-if [ "$NO_PIPE" ]; then
-    run_cmd "mkdir -p $TMPD" $DRYRUN
-fi    
 
 # Common configuration file is used for all filters
 CONFIG="--config $CONFIG_FN"
-
 
 # `cat VCF | vcf_filter.py` avoids weird errors
 FILTER_CMD="cat $VCF |  /usr/local/bin/vcf_filter.py $CMD_ARGS --local-script $FILTER_SCRIPT - $FILTER_NAME" # filter module

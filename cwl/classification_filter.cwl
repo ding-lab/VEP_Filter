@@ -1,11 +1,9 @@
 class: CommandLineTool
 cwlVersion: v1.0
-$namespaces:
-  sbg: 'https://www.sevenbridges.com/'
-id: af_filter
+id: classification_filter
 baseCommand:
   - /bin/bash
-  - /opt/VEP_Filter/src/run_af_filter.sh
+  - /opt/VEP_Filter/src/run_classification_filter.sh
 inputs:
   - id: debug
     type: boolean?
@@ -44,12 +42,12 @@ outputs:
   - id: output
     type: File
     outputBinding:
-      glob: af_filter.output.vcf
-label: AF_Filter
+      glob: classification_filter.output.vcf
+label: Classification_Filter
 arguments:
   - position: 0
     prefix: '-o'
-    valueFrom: af_filter.output.vcf
+    valueFrom: classification_filter.output.vcf
 requirements:
   - class: ResourceRequirement
     ramMin: 2000

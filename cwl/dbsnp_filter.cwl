@@ -2,10 +2,10 @@ class: CommandLineTool
 cwlVersion: v1.0
 $namespaces:
   sbg: 'https://www.sevenbridges.com/'
-id: af_filter
+id: dbsnp_filter
 baseCommand:
   - /bin/bash
-  - /opt/VEP_Filter/src/run_af_filter.sh
+  - /opt/VEP_Filter/src/run_dbsnp_filter.sh
 inputs:
   - id: debug
     type: boolean?
@@ -40,16 +40,31 @@ inputs:
       position: 0
       prefix: '-E'
     label: Bypass filter
+  - id: rescue_cosmic
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '-c'
+    label: Retain COSMIC variants
+  - id: rescue_clinvar
+    type: boolean?
+    inputBinding:
+      position: 0
+      prefix: '-l'
+    label: Rescue ClinVar variants
 outputs:
   - id: output
     type: File
     outputBinding:
-      glob: af_filter.output.vcf
-label: AF_Filter
+      glob: dbsnp_filter.output.vcf
+label: DBSNP_Filter
 arguments:
   - position: 0
     prefix: '-o'
-    valueFrom: af_filter.output.vcf
+    valueFrom: dbsnp_filter.output.vcf
+  - position: 0
+    prefix: '-I'
+    valueFrom: all
 requirements:
   - class: ResourceRequirement
     ramMin: 2000
