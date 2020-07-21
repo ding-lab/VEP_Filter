@@ -1,11 +1,9 @@
 class: CommandLineTool
 cwlVersion: v1.0
-$namespaces:
-  sbg: 'https://www.sevenbridges.com/'
-id: _v_l_d__filter_v_c_f
+id: af_filter
 baseCommand:
   - /bin/bash
-  - /opt/VLD_FilterVCF/src/run_vaf_length_depth_filters.sh
+  - /opt/VEP_Filter/src/run_af_filter.sh
 inputs:
   - id: dryrun
     type: boolean?
@@ -65,5 +63,5 @@ requirements:
   - class: ResourceRequirement
     ramMin: 2000
   - class: DockerRequirement
-    dockerPull: 'mwyczalkowski/vld_filter_vcf:20200614'
+    dockerPull: 'mwyczalkowski/vep_filter:20200719"
   - class: InlineJavascriptRequirement
