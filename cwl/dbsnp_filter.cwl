@@ -20,12 +20,6 @@ inputs:
       position: 1
     label: VCF
     doc: VCF input file to filter
-  - id: config
-    type: File
-    inputBinding:
-      position: 2
-    label: config
-    doc: configuration file used by all filters
   - id: remove_filtered
     type: boolean?
     inputBinding:
