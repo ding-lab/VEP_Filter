@@ -47,7 +47,7 @@ class ClassificationFilter(VEPFilter):
             raise Exception( "CSQ field %s not found in %s." % ("Existing_variation", args.input_vcf) )
         if args.rescue_clinvar:
             if "ClinVar" not in self.CSQ_header: 
-                raise Exception( "CSQ field %s not found in %s." % ("ClinVar", args.input_vcf) )
+                raise Exception( "CSQ field %s not found in %s.  -l / --rescue_clinvar unavailable" % ("ClinVar", args.input_vcf) )
 
         # below becomes Description field in VCF
         if self.bypass:

@@ -3,9 +3,11 @@ OUTD="output"
 mkdir -p $OUTD
 
 VCF="/data/call-vep_annotate/execution/results/vep/output_vep.vcf"
-CONFIG="/data/params/af_filter_config.ini"
+CONFIG="/params/af_filter_config.ini"
 
 OUT="$OUTD/C3L-00908.af.vcf"
 
-bash ../../src/run_af_filter.sh $@ $ARG -o $OUT $VCF $CONFIG
+CMD="bash ../../src/run_af_filter.sh $@ $ARG -o $OUT $VCF $CONFIG"
+>&2 echo Running : $CMD
+eval $CMD
 
