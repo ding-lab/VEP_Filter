@@ -1,5 +1,6 @@
 
-DATAD="/home/mwyczalk_test/Projects/TinDaisy/testing/C3L-00908-data/dat"
+#DATAD="/home/mwyczalk_test/Projects/TinDaisy/testing/C3L-00908-data/dat"
+DATAD="/home/mwyczalk_test/Projects/TinDaisy/testing/C3L-00908-data"
 
 # changing directories so entire project directory is mapped by default
 cd ../..
