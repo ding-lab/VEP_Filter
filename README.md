@@ -24,6 +24,15 @@ git clone --recurse-submodules https://github.com/ding-lab/VEP_Filter.git
 
 Describe configuration files
 
+VEP custom annotation used for ClinVar rescue.  Require custom_filename and custom_args
+Described here: http://uswest.ensembl.org/info/docs/tools/vep/script/vep_custom.html
+
+Clinvar database (argument for custom_filename) can be obtained from e.g., 
+    ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/
+
+Argument passed to VEP is then,
+    --custom $custom_filename,$custom_args
+
 ## Testing
 
 
