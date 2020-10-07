@@ -45,7 +45,7 @@ inputs:
     inputBinding:
       position: 0
       prefix: '-l'
-    label: Rescue ClinVar variants
+    label: Retain ClinVar variants
 outputs:
   - id: output
     type: File
