@@ -63,5 +63,5 @@ requirements:
   - class: ResourceRequirement
     ramMin: 2000
   - class: DockerRequirement
-    dockerPull: 'mwyczalkowski/vep_filter:20200719'
+    dockerPull: 'mwyczalkowski/vep_filter:20201017'
   - class: InlineJavascriptRequirement

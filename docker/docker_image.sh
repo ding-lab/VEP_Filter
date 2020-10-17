@@ -1,1 +1,1 @@
-IMAGE="mwyczalkowski/vep_filter:20200719"
+IMAGE="mwyczalkowski/vep_filter:20201017"
