@@ -126,7 +126,7 @@ class VEPFilter(ConfigFileFilter):
     def get_id_type(cls, CSQ):
         (is_dbsnp, is_cosmic, is_clinvar) = (False, False, False)
 
-        if "Existing Variation" in CSQ and CSQ["Existing_variation"] != "":
+        if "Existing_variation" in CSQ and CSQ["Existing_variation"] != "":
             CSQ_values = CSQ["Existing_variation"].split("&")
             for ev in CSQ_values:
                 is_dbsnp = is_dbsnp or ev.startswith("rs")
@@ -150,7 +150,7 @@ class VEPFilter(ConfigFileFilter):
         if id_policy not in ["dbsnp", "all"]:
             raise Exception( "Illegal id_policy ")
             
-        if "Existing Variation" in CSQ and CSQ["Existing_variation"] != "":
+        if "Existing_variation" in CSQ and CSQ["Existing_variation"] != "":
             CSQ_values = CSQ["Existing_variation"].split("&")
             for ev in CSQ_values:
                 if ev.startswith("rs"):
