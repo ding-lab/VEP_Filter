@@ -11,3 +11,10 @@ for details on this dataset.  It is based on CromwellRunner run: 06_CCRCC.HotSpo
 File /gscmnt/gc2541/cptac3_analysis/cromwell-workdir/cromwell-executions/tindaisy-hotspot.cwl/47c63123-dab6-417b-a431-c9aa9589e6e4/compressed_results.tar.gz
 copied to ./dat
 
+# Run5 testing
+
+Uses C3L-00908 run5 data copied to katmai.  See
+    /home/mwyczalk_test/Projects/TinDaisy/testing/C3L-00908-data/TinDaisy2/README.md
+
+
+
