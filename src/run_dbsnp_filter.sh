@@ -1,7 +1,7 @@
 #/bin/bash
 
 read -r -d '' USAGE_CLASS <<'EOF'
-Run allele frequency filters on a VCF 
+Run dbsnp frequency filters on a VCF and optionally add variant ID to VCF
 
 Usage:
   bash run_dbsnp_filter.sh [options] VCF
